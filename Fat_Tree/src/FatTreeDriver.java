@@ -75,58 +75,44 @@ public class FatTreeDriver {
         for (int i = 0; i < totalTreeNodes; i++) { 
             adj.add(new ArrayList<Integer>()); 
         } 
-
-        //this loop adds agg switches for first half of core switches
-        for(int i=numOfCoreSwitches; i<numOfCoreSwitches+numOfAggSwitches; i++) {
-        	for(int j=0; j<numOfCoreSwitches/2; j++) {
-        		addEdge(adj, j, i);
+        
+        for(int i=0; i<numOfCoreSwitches; i+=2) {
+        	for(int j=numOfCoreSwitches; j<numOfCoreSwitches+numOfAggSwitches; j+=2) {
+        		addEdge(adj, i, j);
         	}
-        	i++;
         }
         
-        //this loop adds agg switches for second half of core switches
-        for(int i=numOfCoreSwitches+1; i<numOfCoreSwitches+numOfAggSwitches; i++) {
-        	for(int j=numOfCoreSwitches/2; j<numOfCoreSwitches; j++) {
-        		addEdge(adj, j, i);
+        for(int i=1; i<numOfCoreSwitches; i+=2) {
+        	for(int j=numOfCoreSwitches+1; j<numOfCoreSwitches+numOfAggSwitches; j+=2) {
+        		addEdge(adj, i, j);
         	}
-        	i++;
         }
-        
-        
+                
         //this series of loops creates the structure of the graph
         int index = numOfCoreSwitches+numOfEdgeSwitches;
         for(int i=numOfCoreSwitches; i<numOfCoreSwitches+numOfEdgeSwitches; i++) {
-
-        	for(int j=0; j<numOfSwitchPerPod; j++) {        
-        		System.out.println(i);
-        		System.out.println(index);
-                System.out.println();
+        	for(int j=0; j<numOfSwitchPerPod; j+=2) {        
         		addEdge(adj, i, index);
-        		index++;
         	}
-        	i++;
+        	index++;
         }
         
-       index = numOfCoreSwitches+numOfEdgeSwitches;
-       for(int i=numOfCoreSwitches+1; i<numOfCoreSwitches+numOfEdgeSwitches; i++) {
-        	for(int j=0; j<numOfSwitchPerPod; j++) {
-                System.out.println(i);
-                System.out.println(index);
-                System.out.println();
+        index = numOfCoreSwitches+numOfEdgeSwitches;
+        for(int i=numOfCoreSwitches+1; i<numOfCoreSwitches+numOfEdgeSwitches; i++) {
+        	for(int j=0; j<numOfSwitchPerPod; j+=2) {        
         		addEdge(adj, i, index);
-        		index++;
         	}
-        	i++;
+        	index++;
         }
-       
-       //Adds physical machines and connects them to edge switches
-       int pmIndex = numOfCoreSwitches+numOfEdgeSwitches+numOfAggSwitches;
-       for(int i=numOfCoreSwitches+numOfEdgeSwitches; i<numOfCoreSwitches+numOfEdgeSwitches+numOfAggSwitches; i++) {
-    	   for(int j=0; j<numOfSwitchPerPod; j++) {
-       			addEdge(adj, i, pmIndex);
-       			pmIndex++;
-       		}
-       }
+                
+        //Adds physical machines and connects them to edge switches
+        int pmIndex = numOfCoreSwitches+numOfEdgeSwitches+numOfAggSwitches;
+        for(int i=numOfCoreSwitches+numOfEdgeSwitches; i<numOfCoreSwitches+numOfEdgeSwitches+numOfAggSwitches; i++) {
+     	   for(int j=0; j<numOfSwitchPerPod; j++) {
+        			addEdge(adj, i, pmIndex);
+        			pmIndex++;
+        		}
+        }
        
        boolean isSource = true;
        String sourceDest;
@@ -192,6 +178,7 @@ public class FatTreeDriver {
        		VNFIndex += 2;
        		totalCost += startCost;
        		totalCost += endCost;
+       		totalCost -= (numVNF*2);
        }
        totalCost += totalCost2;
        
@@ -338,9 +325,9 @@ public class FatTreeDriver {
         	int distance = dist[dest];
         	if(showOutput) {
         	System.out.println("\nThe number of hops required to traverse between the virtual machine pair's source "
-        			+ "and destination physical machines is " + distance + ".");
+        			+ "and destination physical machines is " + (distance-2) + ".");
         	}
-            return distance*freq; 
+            return (distance-2)*freq; 
         } 
         
         else
@@ -424,4 +411,3 @@ public class FatTreeDriver {
         return false; 
     } 
 } 
-
